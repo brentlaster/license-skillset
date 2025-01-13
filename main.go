@@ -16,7 +16,7 @@ func main() {
 }
 
 func run() error {
-	http.HandleFunc("/random-commit-message", handlers.CommitMessage)
+	http.HandleFunc("/latest-version-go", handlers.LatestVersionGo)
 	http.HandleFunc("/random-lorem-ipsum", handlers.Loripsum)
 	http.HandleFunc("/random-user", handlers.User)
 	http.HandleFunc("/_ping", func(w http.ResponseWriter, r *http.Request) {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func LatestGoVersion(w http.ResponseWriter, r *http.Request) {
+func LatestVersionGo(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Latest Go Version Called")
 	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://go.dev/dl/?mode=json", nil)
 	if err != nil {

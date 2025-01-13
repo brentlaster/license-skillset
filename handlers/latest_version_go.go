@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 type GoVersion struct {
@@ -16,44 +17,46 @@ func LatestVersionGo(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Latest Go Version Called")
 	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://go.dev/dl/?mode=json", nil)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
 	}
 
 	resp, err := (&http.Client{}).Do(req)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, "Failed to fetch data", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Unexpected status code: %d", resp.StatusCode), http.StatusInternalServerError)
 		return
 	}
 
-	// we need to use tee here because io.Copy consumes the resp.Body stream and leads to EOF for decoding
+	// Buffer the response body for decoding
 	var bodyBuffer bytes.Buffer
 	tee := io.TeeReader(resp.Body, &bodyBuffer)
-	if _, err := io.Copy(w, tee); err != nil {
-		fmt.Println("Something unrecoverable went wrong")
+
+	// Drain the tee to ensure we can parse the body later
+	if _, err := io.Copy(io.Discard, tee); err != nil {
+		http.Error(w, "Failed to process response body", http.StatusInternalServerError)
 		return
 	}
 
 	// Parse the JSON response
 	var versions []GoVersion
 	if err := json.NewDecoder(&bodyBuffer).Decode(&versions); err != nil {
-		fmt.Println(err)
-		fmt.Println(resp.Body)
-		fmt.Println("Could not decode response")
+		http.Error(w, "Failed to parse JSON response", http.StatusInternalServerError)
+		fmt.Printf("Failed to decode JSON: %v\n", err)
 		return
 	}
 
 	// The latest version is the first item in the array
 	if len(versions) > 0 {
-		fmt.Println(versions[0].Version)
+		trimmedVersion := strings.TrimPrefix(versions[0].Version, "go")
+		fmt.Fprintf(w, "%s", trimmedVersion) // Write the version to the HTTP response
 		return
 	}
-	fmt.Println("No versions found")
 
+	http.Error(w, "No versions found", http.StatusNotFound)
 }

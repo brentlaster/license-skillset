@@ -8,7 +8,7 @@ import (
 
 func CommitMessage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Commit Message Called")
-	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://whatthecommit.com/index.txt", nil)
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://go.dev/dl/?mode=json", nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

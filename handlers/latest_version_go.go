@@ -6,8 +6,8 @@ import (
 	"net/http"
 )
 
-func CommitMessage(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Commit Message Called")
+func LatestGoVersion(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Latest Go Version Called")
 	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, "https://go.dev/dl/?mode=json", nil)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

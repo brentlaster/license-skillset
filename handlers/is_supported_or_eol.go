@@ -86,10 +86,6 @@ func IsSupportedOrEOL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Output the parsed data
-	// fmt.Printf("Release Info:\n")
-	// fmt.Printf("Release Date: %s\n", releaseInfo.ReleaseDate)
-
 	// Handle the "eol" field based on its type
 	if eolDate, ok := releaseInfo.EOL.(string); ok {
 		fmt.Fprintf(w, "Version %s is EOL as of %s. The latest release was %s on %s.\n",

@@ -18,8 +18,7 @@ func main() {
 func run() error {
 	http.HandleFunc("/latest-version-go", handlers.LatestVersionGo)
 	http.HandleFunc("/supported-versions-go", handlers.SupportedVersionsGo)
-	http.HandleFunc("/random-lorem-ipsum", handlers.Loripsum)
-	http.HandleFunc("/random-user", handlers.User)
+	http.HandleFunc("/is-supported-or-eol", handlers.IsSupportedOrEOL)
 	http.HandleFunc("/_ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("OK"))
 	})
